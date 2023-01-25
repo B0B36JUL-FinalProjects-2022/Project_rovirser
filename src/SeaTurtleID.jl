@@ -4,6 +4,10 @@ module SeaTurtleID
 export greet, greet2
 
 greet() = print("Hello World testing this")
-greet2() = print("My name is Sergi")
+
+function greet2()
+    x="My name is Sergi"
+    return x
+end
 
 end
