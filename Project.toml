@@ -4,6 +4,9 @@ authors = ["sergirovisu74@gmail.com"]
 version = "0.1.0"
 
 [deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 
 [compat]

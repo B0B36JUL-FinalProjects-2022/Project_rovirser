@@ -1,10 +1,10 @@
 using SeaTurtleID
-using Test
+using Test, DataFrames
 
 @testset "SeaTurtleID.jl" begin
     # Write your tests here.
 
-    x="My name is Sergi"
-    @test greet2() == x
+    df = DataFrame()
+    @test typeof(loadDataset()) == typeof(df)
 
 end

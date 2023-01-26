@@ -1,13 +1,24 @@
 module SeaTurtleID
 
+using  JSON, DataFrames
+
 # Write your package code here.
-export greet, greet2
+export loadDataset
 
-greet() = print("Hello World testing this")
 
-function greet2()
-    x="My name is Sergi"
-    return x
+function loadDataset()
+
+    # Define the path to the JSON file
+    file_path = "../annotations.json"
+
+    # Read the JSON file
+    data = JSON.parsefile(file_path)
+
+    # Convert the JSON data to a dataset
+    column_data = data["images"]
+
+    dataset = DataFrame(column_data)
+
 end
 
 end
