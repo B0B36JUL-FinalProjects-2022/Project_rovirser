@@ -40,21 +40,37 @@ end
 function detectFaces()
 
     images = loadImages()
-    turtles_labels = collect(1:400)
-
     num_images = length(images)
-    num_turtles = 400
-    train_images = images[1:round(Int, num_images*0.8)]
-    train_labels = turtles_labels[1:round(Int, num_turtles*0.8)]
-    test_images = images[round(Int, num_images*0.8) + 1:num_images]
-    test_labels = turtles_labels[round(Int, num_turtles*0.8)+1:num_turtles  ]
+    turtles_labels = collect(1:num_images)
 
+    # Preprocess the images
+    img_size = (300, 300)
+    imgs = [imresize(load(img), img_size) for img in images]
+
+    train_images = imgs[1:round(Int, num_images*0.8)]
+    train_labels = turtles_labels[1:round(Int, num_images*0.8)]
+    test_images = imgs[round(Int, num_images*0.8) + 1:num_images]
+    test_labels = turtles_labels[round(Int, num_images*0.8)+1:num_images]
 
     #preprocess images and make a prediction
     #better to extract turtles features?
+    model = Chain(
+        Conv((3, 3), 1 => 32, relu),
+        MaxPool((2, 2)),
+        Conv((3, 3), 32 => 64, relu),
+        MaxPool((2, 2)),
+        x -> reshape(x, :, size(x, 4)),
+        Dense(64 * 7 * 7, 400),
+        softmax)
 
-    # Train the model
+    loss(x, y) = crossentropy(model(x), y)
+    opt = Flux.setup(Adam(), model)
     Flux.train!(loss, train_images, train_labels, opt)
+
+    accuracy(x, y) = mean(Flux.onecold(model(x)) .== Flux.onecold(y))
+    acc = accuracy(test_images, test_labels)
+
+
 
     turtle_counts = Dict{Int, Int}() # Initialize an empty dictionary
 
