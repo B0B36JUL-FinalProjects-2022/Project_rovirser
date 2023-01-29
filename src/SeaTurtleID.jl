@@ -4,6 +4,7 @@ using JSON, DataFrames
 using Flux
 using Images
 
+
 # Write your package code here.
 export loadDataset, loadImages
 
@@ -37,6 +38,12 @@ function loadImages()
     return images
 end
 
+function processImages(images :: Array{String})
+    img_size = (600, 600)
+    imgs = [imresize(load(img), img_size) for img in images]
+    return imgs
+end
+
 function detectFaces()
 
     images = loadImages()
@@ -44,35 +51,20 @@ function detectFaces()
     turtles_labels = collect(1:num_images)
 
     # Preprocess the images
-    img_size = (300, 300)
-    imgs = [imresize(load(img), img_size) for img in images]
+    imgs = processImages(images)
+
+    #grayscale?
 
     train_images = imgs[1:round(Int, num_images*0.8)]
     train_labels = turtles_labels[1:round(Int, num_images*0.8)]
     test_images = imgs[round(Int, num_images*0.8) + 1:num_images]
     test_labels = turtles_labels[round(Int, num_images*0.8)+1:num_images]
-
-    #preprocess images and make a prediction
-    #better to extract turtles features?
-    model = Chain(
-        Conv((3, 3), 1 => 32, relu),
-        MaxPool((2, 2)),
-        Conv((3, 3), 32 => 64, relu),
-        MaxPool((2, 2)),
-        x -> reshape(x, :, size(x, 4)),
-        Dense(64 * 7 * 7, 400),
-        softmax)
-
-    loss(x, y) = crossentropy(model(x), y)
-    opt = Flux.setup(Adam(), model)
-    Flux.train!(loss, train_images, train_labels, opt)
-
-    accuracy(x, y) = mean(Flux.onecold(model(x)) .== Flux.onecold(y))
-    acc = accuracy(test_images, test_labels)
+   
+    # resnet model?
 
 
 
-    turtle_counts = Dict{Int, Int}() # Initialize an empty dictionary
+    #= turtle_counts = Dict{Int, Int}() # Initialize an empty dictionary
 
     # Iterate through the predictions
     for turtle in predictions
@@ -86,7 +78,7 @@ function detectFaces()
     # Print out turtle counts
     for turtle in keys(turtle_counts)
         println("Turtle $(turtle) appears $(turtle_counts[turtle]) times")
-    end
+    end =#
 
 
 end
