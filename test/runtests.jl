@@ -7,4 +7,9 @@ using Test, DataFrames
     df = DataFrame()
     @test typeof(loadDataset()) == typeof(df)
 
+    images = ["./data/images/t001/anuJvqUqBB.JPG"]
+    @test typeof(loadImages()) == typeof(images)
+
+    #add test preprocess images, wait if I have to gray them
+
 end

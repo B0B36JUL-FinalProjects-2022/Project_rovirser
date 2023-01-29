@@ -6,7 +6,7 @@ using Images
 
 
 # Write your package code here.
-export loadDataset, loadImages
+export loadDataset, loadImages, processImages
 
 
 function loadDataset()
