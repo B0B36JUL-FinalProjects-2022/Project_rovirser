@@ -6,24 +6,19 @@ using Statistics
 # Write your package code here.
 export detectFaces
 
-function detectFaces(max_epochs = 1000)
+function detectFaces(num_turtles = 400; max_epochs = 1000)
 
     images = loadImages()
     size(images)
 
     num_images = length(images)
-    num_turtles = 400
     turtles = collect(1:num_turtles)
 
     # Preprocess the images
     imgs = processImages(images)
+    imgs = to_array(imgs)
 
-    #Train and test samples
-    train_images = imgs[1:round(Int, num_images*0.8)]
-    test_images = imgs[round(Int, num_images*0.8) + 1:num_images]
-    train_labels = turtles[1:round(Int, num_turtles*0.8)]
-    test_labels = turtles[round(Int, num_turtles*0.8)+1:num_turtles]
-    
+    X_train, y_train, X_test, y_test = loadData(imgs, turtles, num_turtles; onehot=true)
 
     # Define a CNN using Flux
     model = Chain(
@@ -41,9 +36,8 @@ function detectFaces(max_epochs = 1000)
     loss(x, y) = Flux.mse(model(x), y)
     optimizer = Flux.setup(Adam(), model)
 
-
    # Train for a specified number of epochs
-    for epoch in 1:max_epochs
+    for epoch in 1:1000
         for (x, y) in zip(train_images, train_labels)
             gs = gradient(() -> loss(x, y), Flux.params(model))
             optimizer.(gs)

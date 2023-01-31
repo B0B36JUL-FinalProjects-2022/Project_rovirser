@@ -1,19 +1,32 @@
-using JSON, DataFrames
+using Flux
 
-export loadDataset
+export toArray, splitData, loadData
 
-function loadDataset()
+function toArray(matrices)
+    n = length(matrices)
+    h, w = size(matrices[1])
+    images = Array{Float32, 4}(undef, n, h, w, 1)
+    for i in 1:n
+        images[i, :, :, 1] = matrices[i]
+    end
+    return images
+end
 
-# Define the path to the JSON file
-file_path = "./data/annotations.json"
+function splitData(images, ratio=0.8)
+    n = size(images, 1)
+    train_size = round(Int, n * ratio)
+    train_images = images[1:train_size, :, :, :]
+    test_images = images[train_size + 1:end, :, :, :]
+    return train_images, test_images
+end
 
-# Read the JSON file
-data = JSON.parsefile(file_path)
+function loadData(imgs, turtles, num_turtles; onehot = true,  classes=0:9)
 
-# Convert the JSON data to a dataset
-column_data = data["images"]
-dataset = DataFrame(column_data)
+    X_train, X_test = split_data(imgs)
+    y_train = turtles[1:round(Int, num_turtles*0.8)]
+    y_test = turtles[round(Int, num_turtles*0.8)+1:num_turtles]
 
-return dataset
+    return X_train, y_train, X_test, y_test
 
 end
+
