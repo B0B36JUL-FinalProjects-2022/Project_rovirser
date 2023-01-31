@@ -1,4 +1,4 @@
-using SeaTurtleID
+import SeaTurtleID: sea
 using Test, DataFrames
 
 @testset "SeaTurtleID.jl" begin
