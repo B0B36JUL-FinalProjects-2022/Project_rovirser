@@ -1,47 +1,55 @@
 using Flux
 using Images
 using ColorTypes
+using Statistics
 
 # Write your package code here.
 export detectFaces
 
-function detectFaces(max_pochs = 1000)
+function detectFaces(max_epochs = 1000)
 
     images = loadImages()
+    size(images)
+
     num_images = length(images)
-    turtles = collect(1:400)
     num_turtles = 400
+    turtles = collect(1:num_turtles)
 
     # Preprocess the images
     imgs = processImages(images)
 
+    #Train and test samples
     train_images = imgs[1:round(Int, num_images*0.8)]
-    train_labels = turtles[1:round(Int, num_turtles*0.8)]
     test_images = imgs[round(Int, num_images*0.8) + 1:num_images]
-    test_labels = turtles[round(Int, num_turtles*0.8)+1:num_turtles] 
+    train_labels = turtles[1:round(Int, num_turtles*0.8)]
+    test_labels = turtles[round(Int, num_turtles*0.8)+1:num_turtles]
+    
 
     # Define a CNN using Flux
     model = Chain(
-        Conv((3, 3), 1 => 32, relu),
+        Conv((3, 3), 1 => 16, pad=(1, 1), relu),
         MaxPool((2, 2)),
-        Conv((3, 3), 32 => 64, relu),
-        MaxPool((2, 2)),
-        Conv((3, 3), 64 => 128, relu),
+        Conv((3, 3), 16 => 32, pad=(1, 1), relu),
         MaxPool((2, 2)),
         x -> reshape(x, :, size(x, 4)),
-        Dense(128, 400),
-        identity
-    )
+        Dense(32 * 7 * 7, 10),
+        softmax
+      )
+    
 
-    # Move the model to GPU for faster training
-    model = gpu(model)
-    loss(x, y) = Flux.crossentropy(model(x), y)    
-    opt = Flux.setup(Adam(), model)
+    # Train the model
+    loss(x, y) = Flux.mse(model(x), y)
+    optimizer = Flux.setup(Adam(), model)
 
-    for i in 1:max_pochs
-        Flux.train!(loss, train_images, train_labels, opt)
+
+   # Train for a specified number of epochs
+    for epoch in 1:max_epochs
+        for (x, y) in zip(train_images, train_labels)
+            gs = gradient(() -> loss(x, y), Flux.params(model))
+            optimizer.(gs)
+        end
+        println("Epoch: $epoch, Loss: $(mean(loss.(train_images, train_labels)))")
     end
-
 
 
     #= turtle_counts = Dict{Int, Int}() # Initialize an empty dictionary
