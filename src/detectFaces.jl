@@ -9,21 +9,20 @@ using Flux.Data: DataLoader
 # Write your package code here.
 export detectFaces
 
-function detectFaces(num_turtles = 400; max_epochs = 1000)
+function detectFaces(max_epochs = 1000)
 
     images = loadImages()
     size(images)
 
     num_images = length(images)
+    num_turtles = 400
     turtles = collect(1:num_turtles)
 
     # Preprocess the images
     imgs = processImages(images)
-    imgs = toArray(imgs)
+    totalImages = toArray(imgs)
 
-    size(imgs)
-
-    X_train, y_train, X_test, y_test = loadData(imgs, turtles, num_turtles; onehot=true)
+    X_train, y_train, X_test, y_test = loadData(totalImages, num_images; onehot=true)
 
     # Define a CNN using Flux
     Random.seed!(666)
