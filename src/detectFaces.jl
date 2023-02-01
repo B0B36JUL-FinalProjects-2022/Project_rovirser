@@ -9,9 +9,9 @@ using DataFrames
 using BSON
 
 # Write your package code here.
-export detectFaces, train_model!
+export detectFaces, train_model!, train_or_load!
 
-function detectFaces(max_epochs = 1000)
+function detectFaces()
 
     images = loadImages()
     size(images)
@@ -48,7 +48,9 @@ function detectFaces(max_epochs = 1000)
 
     #Check the accuracy
     accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
-    "Trai accuracy = " * string(accuracy(X_train, y_train)) |> println
+    "Train accuracy = " * string(accuracy(X_train, y_train)) |> println
+
+    return X_train, X_test, y_train, y_test
 end
 
 function train_model!(m, L, X, y;
@@ -67,4 +69,17 @@ function train_model!(m, L, X, y;
 
     return
 end
+
+function train_or_load!(file_name, m, args...; force=false, kwargs...)
+
+    !isdir(dirname(file_name)) && mkpath(dirname(file_name))
+
+    if force || !isfile(file_name)
+        train_model!(m, args...; file_name=file_name, kwargs...)
+    else
+        m_weights = BSON.load(file_name)[:m]
+        Flux.loadparams!(m, params(m_weights))
+    end
+end
+
 
