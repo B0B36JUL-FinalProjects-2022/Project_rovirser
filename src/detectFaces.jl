@@ -12,6 +12,16 @@ using Plots
 # Write your package code here.
 export detectFaces, train_model!, train_or_load!
 
+
+"""
+    detecFaces(images)
+
+One paramater of images loaded with a specific shape (30x30), reprocessing them, splitting 
+into training and test sets, creating a cnn model and train the samples.
+
+Return: vector of predictions with the test images
+"""
+
 function detectFaces(images)
 
     # Preprocess the images
@@ -47,6 +57,13 @@ function detectFaces(images)
 
     return predictions
 end
+
+"""
+    train_model!(m, l, X, y)
+
+Training the data with the model and loss function, responsable of dividing the set with batches
+Repeats the process epochs times
+"""
 
 function train_model!(m, L, X, y;
     opt = Descent(0.1),
