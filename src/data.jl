@@ -5,7 +5,7 @@ export toArray, splitData, loadData
 
 function toArray(matrices)
     n = length(matrices)
-    images = reshape(hcat(matrices...), (300, 300, 1, n))
+    images = reshape(hcat(matrices...), (30, 30, 1, n))
     return images
 
 end
@@ -18,11 +18,12 @@ function splitData(images, ratio=0.8)
     return train_images, test_images
 end
 
-function loadData(totalImages, onehot; classes=1:400)
+function loadData(totalImages, onehot; classes=1:400, ratio = 0.8)
 
+    labels = loadLabels()
     X_train, X_test = splitData(totalImages)
-    y_train = rand(classes, size(X_train, 4))
-    y_test = rand(classes, size(X_test, 4))
+    y_train = labels[1: round(Int, size(totalImages, 4) * ratio)]
+    y_test = labels[round(Int, size(totalImages, 4) * ratio) + 1: size(totalImages, 4)]
     
     if onehot
         y_train = onehotbatch(y_train, classes)
@@ -32,4 +33,3 @@ function loadData(totalImages, onehot; classes=1:400)
     return X_train, y_train, X_test, y_test
 
 end
-

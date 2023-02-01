@@ -2,44 +2,14 @@ using Flux
 using Flux: params
 using Flux: crossentropy
 using Flux.Data: DataLoader
+using Flux: onecold
 using Statistics
 using Random
 using DataFrames
-using DecisionTree
+using BSON
+
 # Write your package code here.
-export detectFaces, train_model!, decisionTree
-
-function decisionTree()
-
-    images = loadImages()
-    size(images)
-
-    num_images = length(images)
-    num_turtles = 400
-    turtles = collect(1:num_turtles)
-
-    # Preprocess the images
-    imgs = processImages(images)
-
-    #create a matrix where each row will be an image
-    x = zeros(num_images, 300*300)
-    for i in 1:num_images
-        image_vector = vec(imgs[i])
-        x[i, :] = image_vector
-    end
-
-    #train images and different classes
-    train_images = x[1:round(Int, num_images*0.8), :]
-    labels = collect(1:400)
-
-    #model and prediction
-    model = build_forest(labels, train_images, 20, 50, 1.0)
-    predTest = apply_forest(model, x)
-
-    return predTest
-
-end
-
+export detectFaces, train_model!
 
 function detectFaces(max_epochs = 1000)
 
@@ -54,43 +24,47 @@ function detectFaces(max_epochs = 1000)
     imgs = processImages(images)
     totalImages = toArray(imgs)
 
+    #display(images[1])
+
     X_train, y_train, X_test, y_test = loadData(totalImages, true)
-    labels =  
 
     # Define a CNN using Flux
     Random.seed!(666)
-    model = Chain(
+    m = Chain(
         Conv((2,2), 1=>16, relu),
         MaxPool((2,2)),
         Conv((2,2), 16=>8, relu),
         MaxPool((2,2)),
-        flatten,
+        Flux.flatten,
         Dense(288, size(y_train,1)),
         softmax,
-        )
+    )
 
     # Train the model
-    loss(X, y) = crossentropy(model(X_train), y)
-    train_model!(model, loss, X_train, y_train)
+    L(X, y) = crossentropy(m(X), y)
+
+    file_name = "model_project.bson"   
+    train_model!(m, L, X_train, y_train; n_epochs=30, file_name=file_name)
 
     #Check the accuracy
     accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
-    "Test accuracy = " * string(accuracy(X_test, y_test))
-
-    predictions = onecold(model(test_images))
-
-
+    "Trai accuracy = " * string(accuracy(X_train, y_train)) |> println
 end
 
-function train_model!(m, L, X, y; batchsize = 128, n_epochs = 10)
-    batches = DataLoader((X, y), batchsize = batchsize, shuffle = true)
-    opt = Flux.Adam()
+function train_model!(m, L, X, y;
+    opt = Descent(0.1),
+    batchsize = 32,
+    n_epochs = 10,
+    file_name = "")
+
+    batches = DataLoader((X, y); batchsize, shuffle = true)
+
     for _ in 1:n_epochs
-        for (x, y) in batches
-            Flux.train!(L, params(m), [(x, y)], opt)
-        end
+        Flux.train!(L, params(m), batches, opt)
     end
+
+    !isempty(file_name) && BSON.bson(file_name, m=m)
+
+    return
 end
-
-
 
