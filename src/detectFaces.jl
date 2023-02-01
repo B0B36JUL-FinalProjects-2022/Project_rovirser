@@ -1,7 +1,10 @@
 using Flux
+using Flux: params
 using Images
 using ColorTypes
 using Statistics
+using Random
+using Flux.Data: DataLoader
 
 # Write your package code here.
 export detectFaces
@@ -16,37 +19,36 @@ function detectFaces(num_turtles = 400; max_epochs = 1000)
 
     # Preprocess the images
     imgs = processImages(images)
-    imgs = to_array(imgs)
+    imgs = toArray(imgs)
+
+    size(imgs)
 
     X_train, y_train, X_test, y_test = loadData(imgs, turtles, num_turtles; onehot=true)
 
     # Define a CNN using Flux
+    Random.seed!(666)
     model = Chain(
-        Conv((3, 3), 1 => 16, pad=(1, 1), relu),
-        MaxPool((2, 2)),
-        Conv((3, 3), 16 => 32, pad=(1, 1), relu),
-        MaxPool((2, 2)),
-        x -> reshape(x, :, size(x, 4)),
-        Dense(32 * 7 * 7, 10),
-        softmax
-      )
+        Conv((2,2), 1=>16, relu),
+        MaxPool((2,2)),
+        Conv((2,2), 16=>8, relu),
+        MaxPool((2,2)),
+        flatten,
+        Dense(288, size(y_train,1)),
+        softmax,
+    )
     
-
     # Train the model
-    loss(x, y) = Flux.mse(model(x), y)
-    optimizer = Flux.setup(Adam(), model)
+    loss(X, y) = crossentropy(model(X), y)
+    
+    train_model!(model, loss, X_train, y_train)
 
-   # Train for a specified number of epochs
-    for epoch in 1:1000
-        for (x, y) in zip(train_images, train_labels)
-            gs = gradient(() -> loss(x, y), Flux.params(model))
-            optimizer.(gs)
-        end
-        println("Epoch: $epoch, Loss: $(mean(loss.(train_images, train_labels)))")
-    end
+    #Check the accuracy
+    accuracy(x, y) = mean(onecold(m(x)) .== onecold(y))
+    "Test accuracy = " * string(accuracy(X_test, y_test))
 
+    predictions = onecold(model(test_images))
 
-    #= turtle_counts = Dict{Int, Int}() # Initialize an empty dictionary
+    turtle_counts = Dict{Int, Int}() # Initialize an empty dictionary
 
     # Iterate through the predictions
     for turtle in predictions
@@ -60,7 +62,20 @@ function detectFaces(num_turtles = 400; max_epochs = 1000)
     # Print out turtle counts
     for turtle in keys(turtle_counts)
         println("Turtle $(turtle) appears $(turtle_counts[turtle]) times")
-    end =#
+    end
 
+end
 
+function train_model!(model, loss, X, y;
+    opt = Descent(0.1),
+    batchsize = 128,
+    n_epochs = 10,)
+
+    batches = DataLoader((X, y); batchsize, shuffle = true)
+
+    for _ in 1:n_epochs
+        Flux.train!(loss, params(model), batches, opt)
+    end
+
+    return
 end

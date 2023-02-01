@@ -1,15 +1,13 @@
 using Flux
+using Flux: onehotbatch
 
 export toArray, splitData, loadData
 
 function toArray(matrices)
     n = length(matrices)
-    h, w = size(matrices[1])
-    images = Array{Float32, 4}(undef, n, h, w, 1)
-    for i in 1:n
-        images[i, :, :, 1] = matrices[i]
-    end
+    images = reshape(hcat(matrices...), (300, 300, 1, n))
     return images
+
 end
 
 function splitData(images, ratio=0.8)
@@ -20,11 +18,16 @@ function splitData(images, ratio=0.8)
     return train_images, test_images
 end
 
-function loadData(imgs, turtles, num_turtles; onehot = true,  classes=0:9)
+function loadData(imgs, turtles, num_turtles; onehot = true,  classes=1:400)
 
-    X_train, X_test = split_data(imgs)
+    X_train, X_test = splitData(imgs)
     y_train = turtles[1:round(Int, num_turtles*0.8)]
     y_test = turtles[round(Int, num_turtles*0.8)+1:num_turtles]
+
+    if onehot
+        y_train = onehotbatch(y_train, classes)
+        y_test = onehotbatch(y_test, classes)
+    end
 
     return X_train, y_train, X_test, y_test
 
