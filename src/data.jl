@@ -18,7 +18,7 @@ function splitData(images, ratio=0.8)
     return train_images, test_images
 end
 
-function loadData(totalImages, num_images; onehot = true,  classes=1:400)
+function loadData(totalImages, onehot; classes=1:400)
 
     X_train, X_test = splitData(totalImages)
     y_train = rand(classes, size(X_train, 4))

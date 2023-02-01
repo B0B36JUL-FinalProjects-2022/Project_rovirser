@@ -2,7 +2,7 @@ using Images
 using ColorTypes
 using Statistics
 
-export loadImages, processImages
+export loadImages, processImages, loadLabels
 
 function loadImages()
 
@@ -32,3 +32,27 @@ function processImages(images)
      return images
 
 end
+
+function loadLabels()
+
+    labels = zeros(Int, length(images))
+    label = 1
+    index = 1
+    path = "./data/images/"
+    items = readdir(path)
+
+    for i in items
+        path = "./data/images/$i"
+        items = readdir(path)
+        count = length(items)
+        for j in 1:count
+            labels[index] = label
+            index += 1
+        end
+
+        label += 1
+    end
+
+    return labels
+end
+
