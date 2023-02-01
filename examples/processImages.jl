@@ -1,12 +1,16 @@
 using Revise
 import SeaTurtleID as turtle
 
+#loading images with reshaped to 30x30
 images = loadImages()
 
-for i in 1:10
-    display(images[1])
-end
+display(images[1])
 
+#Converting  images to float and to Gray
 processed_images = processImages(images)
 
-typeof(processed_images)
+display(processed_images[1])
+
+#labels vectors of the turtles
+labels = loadLabels()
+
