@@ -1,7 +1,8 @@
 using Revise
-import SeaTurtleID: sea
+import SeaTurtleID as turtle
 
 loadDataset()
 images = loadImages()
-processImages(images :: Array{String})
+processImages(images)
 detectFaces(max_pochs = 1000)
+

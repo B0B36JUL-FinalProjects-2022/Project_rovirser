@@ -1,13 +1,12 @@
 using Flux
 using Flux: params
-using Images
-using ColorTypes
+using Flux: crossentropy
+using Flux.Data: DataLoader
 using Statistics
 using Random
-using Flux.Data: DataLoader
 
 # Write your package code here.
-export detectFaces
+export detectFaces, train_model!
 
 function detectFaces(max_epochs = 1000)
 
@@ -35,10 +34,9 @@ function detectFaces(max_epochs = 1000)
         Dense(288, size(y_train,1)),
         softmax,
     )
-    
+
     # Train the model
     loss(X, y) = crossentropy(model(X), y)
-    
     train_model!(model, loss, X_train, y_train)
 
     #Check the accuracy
@@ -65,16 +63,19 @@ function detectFaces(max_epochs = 1000)
 
 end
 
-function train_model!(model, loss, X, y;
+function train_model!(m, L, X, y;
     opt = Descent(0.1),
     batchsize = 128,
-    n_epochs = 10,)
+    n_epochs = 10)
 
     batches = DataLoader((X, y); batchsize, shuffle = true)
 
     for _ in 1:n_epochs
-        Flux.train!(loss, params(model), batches, opt)
+        Flux.train!(L, params(m), batches, opt)
     end
+
+    !isempty(file_name) && BSON.bson(file_name, m=m)
 
     return
 end
+
