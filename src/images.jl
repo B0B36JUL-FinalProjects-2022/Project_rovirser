@@ -33,22 +33,13 @@ end
 
 function loadLabels()
 
-    labels = zeros(Int, length(images))
-    label = 1
-    index = 1
-    path = "./data/images/"
-    items = readdir(path)
+    dataset = loadDataset()
+    path_orig = dataset[:, "path_orig"]
+    labels = Array{String}(undef, length(path_orig))
 
-    for i in items
-        path = "./data/images/$i"
-        items = readdir(path)
-        count = length(items)
-        for j in 1:count
-            labels[index] = label
-            index += 1
-        end
-
-        label += 1
+    for i in eachindex(path_orig)
+        turtleID = split(path_orig[i], "/")[1]
+        labels[i] = turtleID
     end
 
     return labels
