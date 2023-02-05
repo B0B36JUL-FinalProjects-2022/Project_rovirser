@@ -19,10 +19,10 @@ function splitData(images, ratio=0.8)
 end
 
 function normalizeData(X_train, X_test)
-    col_mean = mean(X_train)
-    col_std = std(X_train)
+    mean = mean(X_train)
+    std = std(X_train)
 
-    return (X_train .- col_mean) ./ col_std, (X_test .- col_mean) ./ col_std
+    return (X_train .- mean) ./ std, (X_test .- mean) ./ std
 end
 
 function onehot(y, classes)

@@ -33,4 +33,10 @@ function detectFaces()
 
 end
 
+function loss(X, y)
+
+    loss = -1 * sum(y .* log.(X))
+    return loss
+end
+
 
