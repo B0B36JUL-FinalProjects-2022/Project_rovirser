@@ -1,10 +1,9 @@
-export toArray, splitData, normalizeData, onehot, loadData
+export toArray, splitData, normalizeData, onehot, onecold, loadData
 
 function toArray(matrices)
     n = length(matrices)
     images = reshape(hcat(matrices...), (30, 30, 1, n))
     return images
-
 end
 
 function splitData(images, ratio=0.8)
@@ -18,11 +17,11 @@ function splitData(images, ratio=0.8)
     return train_images, test_images
 end
 
-function normalizeData(X_train, X_test)
-    mean = mean(X_train)
-    std = std(X_train)
+function normalizeData(X)
+    mean = mean(X)
+    std = std(X)
 
-    return (X_train .- mean) ./ std, (X_test .- mean) ./ std
+    return (X .- mean) ./ std
 end
 
 function onehot(y, classes)
@@ -35,12 +34,15 @@ function onehot(y, classes)
     return result
 end
 
+onecold(y, classes) = [classes[argmax(col)] for col in eachcol(y)]
+
 function loadData(totalImages; ratio = 0.8)
 
     labels = shuffle(loadLabels())
     X_train, X_test = splitData(totalImages)
 
-    X_train, X_test = normalizeData( X_train, X_test)
+    X_train = normalizeData(X_train)
+    X_test = normalizeData(X_test)
 
     y_train = labels[1: round(Int, size(totalImages, 4) * ratio)]
     y_test = labels[round(Int, size(totalImages, 4) * ratio) + 1: size(totalImages, 4)]
