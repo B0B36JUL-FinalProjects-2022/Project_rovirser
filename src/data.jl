@@ -1,8 +1,11 @@
+using Random
+using Statistics
+
 export toArray, splitData, normalizeData, onehot, onecold, loadData
 
 function toArray(matrices)
     n = length(matrices)
-    images = reshape(hcat(matrices...), (30, 30, 1, n))
+    images = reshape(hcat(matrices...), (100, 100, 1, n))
     return images
 end
 
@@ -18,10 +21,10 @@ function splitData(images, ratio=0.8)
 end
 
 function normalizeData(X)
-    mean = mean(X)
-    std = std(X)
+    mn = mean(X)
+    st = std(X)
 
-    return (X .- mean) ./ std
+    return (X .- mn) ./ st
 end
 
 function onehot(y, classes)
