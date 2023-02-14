@@ -5,7 +5,7 @@ export toArray, splitData, normalizeData, onehot, onecold, loadData
 
 function toArray(matrices)
     n = length(matrices)
-    images = reshape(hcat(matrices...), (100, 100, 1, n))
+    images = reshape(hcat(matrices...), (30, 30, 1, n))
     return images
 end
 
@@ -27,18 +27,6 @@ function normalizeData(X)
     return (X .- mn) ./ st
 end
 
-function onehot(y, classes)
-    n = length(y)
-    m = length(classes)
-    result = zeros(n, m)
-    for i in 1:n
-        result[i, findfirst(classes .== y[i])] = 1
-    end
-    return result
-end
-
-onecold(y, classes) = [classes[argmax(col)] for col in eachcol(y)]
-
 function loadData(totalImages; ratio = 0.8)
 
     labels = shuffle(loadLabels())
@@ -52,9 +40,12 @@ function loadData(totalImages; ratio = 0.8)
 
     classes = unique(labels)
 
-    y_train = onehot(y_train, classes)
-    y_test = onehot(y_test, classes)
+    y_train = onehotbatch(y_train, classes)
+    y_test = onehotbatch(y_test, classes)
 
     return X_train, y_train, X_test, y_test
 
 end
+
+
+

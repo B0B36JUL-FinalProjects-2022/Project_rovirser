@@ -16,7 +16,7 @@ function loadImages()
     end
 
     #Load image and resizing to 300x300 each one
-    img_size = (100, 100)
+    img_size = (30, 30)
     return map(x -> imresize(load(x), img_size), images)
 
 end
