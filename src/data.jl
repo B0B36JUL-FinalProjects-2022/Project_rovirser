@@ -1,5 +1,6 @@
 using Random
 using Statistics
+using Flux: onehotbatch
 
 export toArray, splitData, normalizeData, onehot, onecold, loadData
 
