@@ -13,14 +13,12 @@ display(images[1])
 #Converting  images to float and to Gray
 processed_images = processImages(images)
 
-display(processed_images[1])
-
 #labels vectors of the turtles
 labels = loadLabels()
+classes = unique(labels)
 
 #We get the training and test sets
 X_train, y_train, X_test, y_test = loadSets()
 
 Random.seed!(1234)
-model = train(X_train, y_train, 10, 0.001, 1)
-evaluate(model, X_train, y_train, X_test, y_test)
+model = train(X_train, y_train, 10, 0.001, 10)

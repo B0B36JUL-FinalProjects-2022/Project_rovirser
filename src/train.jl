@@ -6,7 +6,7 @@ using Flux.Data: DataLoader
 using Random
 
 # Write your package code here.
-export loadSets, train, accuracy, sgd, evaluate
+export loadSets, train, accuracy, sgd
 
 function loadSets()
 
@@ -73,6 +73,10 @@ function train(X_train, y_train, epochs, lr, batch_size)
             gs = gradient(() -> loss(batch_X, batch_y), params(model))
             sgd(parameters, gs, lr)
         end
+
+        train_acc = accuracy(model, X_train, y_train)
+        test_acc = accuracy(model, X_test, y_test)
+        println("Epoch $epoch: Train accuracy = $train_acc, Test accuracy = $test_acc")
     
     end
 
@@ -80,9 +84,3 @@ function train(X_train, y_train, epochs, lr, batch_size)
 
 end
 
-function evaluate(model, X_train, y_train, X_test, y_test)
-     # Compute the accuracy of the model on the training and test sets
-     train_acc = accuracy(model, X_train, y_train)
-     test_acc = accuracy(model, X_test, y_test)
-     println("Epoch $epoch: Train accuracy = $train_acc, Test accuracy = $test_acc")
-end
