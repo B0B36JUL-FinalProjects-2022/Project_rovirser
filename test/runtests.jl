@@ -16,7 +16,7 @@ using Test, DataFrames
     @test typeof(totalImages) == typeof(imagesProc)  
     @test size(imagesProc) == size(totalImages)
 
-    turtlesID = collect(1:7582)
+    turtlesID = Vector{String}(undef, 7582)
     labels = loadLabels()
     @test typeof(loadLabels()) == typeof(turtlesID)
     @test length(turtlesID) == length(labels)
