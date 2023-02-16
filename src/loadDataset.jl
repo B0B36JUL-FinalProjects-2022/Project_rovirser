@@ -14,6 +14,6 @@ function loadDataset()
     column_data = data["images"]
     dataset = DataFrame(column_data)
 
-return dataset
+    return dataset
 
 end

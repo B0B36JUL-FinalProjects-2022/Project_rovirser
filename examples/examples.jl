@@ -1,14 +1,9 @@
 using Revise
-import SeaTurtleID as turtle
+import SeaTurtleID as ST
 
 #We load the dataset from annotations.json
 
 dataset = loadDataset()
-
-#Show the columns
-for i in 1:7
-    dataset[:, i]
-end
 
 #loading images with reshaped to 30x30
 images = loadImages()

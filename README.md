@@ -13,5 +13,3 @@ The package is not registered and can be installed in the following way
 # Usage
 
 The task will be to make an algorithm that recognizes individual turtles. In order to achieve this we will implement...
-
-# Visualization
