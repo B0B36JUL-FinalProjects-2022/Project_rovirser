@@ -12,4 +12,4 @@ The package is not registered and can be installed in the following way
 
 # Usage
 
-The task will be to make an algorithm that recognizes individual turtles. In order to achieve this we will implement...
+The task will be to make an algorithm that recognizes individual turtles. In order to achieve this we implement an algorithm to update the parameters if a cnn model using the sgd optimisation.
