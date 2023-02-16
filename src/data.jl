@@ -2,7 +2,7 @@ using Random
 using Statistics
 using Flux: onehotbatch
 
-export toArray, splitData, normalizeData, onehot, onecold, loadData
+export toArray, splitData, normalizeData, loadData
 
 function toArray(matrices)
     n = length(matrices)

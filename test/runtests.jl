@@ -25,9 +25,8 @@ using Test, DataFrames
     sol = Array{Float32, 4}
     @test ndims(imagesProc) == ndims(totalImages)
 
-    predictions = detectFaces(images)
-    result = Vector{Int64}(undef, 1516)
-    @test typeof(predictions) == typeof(result)
-    @test length(predictions) == length(result)
-    
+    X_train, y_train, X_test, y_test = loadSets()
+
+    model2 = train(X_train, y_train, 10, 0.001, 10)
+    @test typeof(model2) == Chain{Tuple{Conv{2, 4, typeof(relu), Array{Float32, 4}, Vector{Float32}}, MaxPool{2, 4}, Conv{2, 4, typeof(relu), Array{Float32, 4}, Vector{Float32}}, MaxPool{2, 4}, var"#32#34", Dense{typeof(identity), Matrix{Float32}, Vector{Float32}}, typeof(softmax)}}
 end
